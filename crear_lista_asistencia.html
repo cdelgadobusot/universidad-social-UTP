@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crear Lista de Asistencia</title>
+  <link rel="stylesheet" href="global.css" />
+</head>
+<body>
+  <header class="navbar">
+    <a class="navbar-brand" href="index.html">Universidad Social</a>
+  </header>
+
+  <main class="container animate-fade-in">
+    <h1>Crear Lista de Asistencia</h1>
+
+    <section id="actividades" class="grid-2"></section>
+
+    <!-- Modal -->
+    <div id="modal-lista" class="modal" role="dialog" aria-modal="true">
+      <div class="modal-content">
+        <button class="modal-close" aria-label="Cerrar">×</button>
+        <h2>Lista de Estudiantes</h2>
+        <div id="lista-estudiantes"></div>
+        <div style="display:flex;justify-content:flex-end;gap:1rem;margin-top:1.5rem">
+          <button id="btn-borrador" class="btn btn-secondary">Guardar Borrador</button>
+          <button id="btn-compartir" class="btn btn-primary">Compartir lista a organismos receptores</button>
+        </div>
+      </div>
+    </div>
+
+    <p><a class="btn btn-secondary" href="index.html">Página Principal</a></p>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    // Datos demo -----------------------------------------------------------
+    const actividades = [
+      { id: 1, titulo: 'Reforestación Parque', fecha: '2025-07-01' },
+      { id: 2, titulo: 'Recogida de Alimentos', fecha: '2025-07-10' },
+    ];
+    const estudiantes = [
+      'Ana Gómez', 'Luis Pérez', 'María Rodríguez', 'Carlos Díaz', 'José López',
+      'Fernanda Torres', 'Miguel Castillo', 'Laura Sánchez'
+    ];
+
+    const cont = document.getElementById('actividades');
+    actividades.forEach(act => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `<h2>${act.titulo}</h2><p>Fecha: ${act.fecha}</p><button class="btn btn-primary">Crear Lista</button>`;
+      card.querySelector('button').addEventListener('click', () => openModal(act));
+      cont.appendChild(card);
+    });
+
+    // Modal ---------------------------------------------------------------
+    const modal = qs('#modal-lista');
+    const closeBtn = qs('.modal-close', modal);
+    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+
+    function openModal(act) {
+      qs('#lista-estudiantes').innerHTML = estudiantes.map((name, i) =>
+        `<label><input type="checkbox" ${i < 5 ? 'checked' : ''}/> ${name}</label>`
+      ).join('<br/>');
+      modal.classList.add('active');
+    }
+
+    // Compartir / Borrador ------------------------------------------------
+    qs('#btn-compartir').addEventListener('click', () => {
+      modal.classList.remove('active');
+      showAlert('Lista compartida con éxito.', 'success');
+    });
+    qs('#btn-borrador').addEventListener('click', () => {
+      showAlert('Borrador guardado.', 'info');
+    });
+  </script>
+</body>
+</html>

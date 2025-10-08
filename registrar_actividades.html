@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrar en Actividades</title>
+  <link rel="stylesheet" href="global.css" />
+</head>
+<body>
+  <header class="navbar">
+    <a class="navbar-brand" href="index.html">Universidad Social</a>
+  </header>
+
+  <main class="container animate-fade-in">
+    <h1>Registrar en Actividades</h1>
+
+    <form id="form-reg" class="card" data-success="Te has registrado en la actividad correctamente.">
+      <div class="form-group">
+        <label for="titulo">Título de la actividad</label>
+        <input id="titulo" name="titulo" required />
+      </div>
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" name="fecha" required />
+      </div>
+      <div class="form-group">
+        <label for="lugar">Lugar</label>
+        <input id="lugar" name="lugar" required />
+      </div>
+      <div class="form-group">
+        <label for="recibo">Recibo de matrícula</label>
+        <input type="file" id="recibo" name="recibo" accept="image/*,application/pdf" required />
+      </div>
+      <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+
+    <p><a class="btn btn-secondary" href="index.html">Menú Principal</a></p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

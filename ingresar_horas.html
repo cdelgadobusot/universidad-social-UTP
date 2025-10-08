@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ingresar Horas</title>
+  <link rel="stylesheet" href="global.css" />
+</head>
+<body>
+  <header class="navbar">
+    <a class="navbar-brand" href="index.html">Universidad Social</a>
+  </header>
+
+  <main class="container animate-fade-in">
+    <h1>Ingresar Horas</h1>
+
+    <div class="card">
+      <input id="buscar" placeholder="Buscar estudiante…" style="width:100%;margin-bottom:1rem" />
+      <ul id="listado"></ul>
+    </div>
+
+    <!-- Modal editar horas -->
+    <div id="modal-horas" class="modal" role="dialog" aria-modal="true">
+      <div class="modal-content">
+        <button class="modal-close" aria-label="Cerrar">×</button>
+        <h2 id="modal-title"></h2>
+        <form id="form-horas" data-success="Horas actualizadas correctamente.">
+          <div class="form-group">
+            <label for="horas-servicio">Horas de servicio social</label>
+            <input type="number" id="horas-servicio" name="servicio" min="0" required />
+          </div>
+          <div class="form-group">
+            <label for="horas-voluntariado">Horas de voluntariado</label>
+            <input type="number" id="horas-voluntariado" name="voluntariado" min="0" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </form>
+      </div>
+    </div>
+
+    <p><a class="btn btn-secondary" href="index.html">Página Principal</a></p>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    // Datos demo -----------------------------------------------------------
+    const estudiantes = [
+      { nombre: 'Ana Gómez', servicio: 30, voluntariado: 10 },
+      { nombre: 'Luis Pérez', servicio: 20, voluntariado: 5 },
+      { nombre: 'María Rodríguez', servicio: 0, voluntariado: 12 },
+      { nombre: 'Carlos Díaz', servicio: 15, voluntariado: 8 },
+    ];
+
+    const listado = qs('#listado');
+    const buscar = qs('#buscar');
+
+    function renderList(filter = '') {
+      listado.innerHTML = estudiantes
+        .filter(e => e.nombre.toLowerCase().includes(filter.toLowerCase()))
+        .map((e, i) => `<li style="margin:0 0 .5rem"><a href="#" data-index="${i}">${e.nombre}</a></li>`)
+        .join('');
+    }
+    renderList();
+
+    buscar.addEventListener('input', (e) => renderList(e.target.value));
+
+    listado.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A') {
+        e.preventDefault();
+        const i = e.target.dataset.index;
+        openModal(i);
+      }
+    });
+
+    // Modal ---------------------------------------------------------------
+    const modal = qs('#modal-horas');
+    const closeBtn = qs('.modal-close', modal);
+    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+
+    function openModal(index) {
+      const est = estudiantes[index];
+      qs('#modal-title').textContent = est.nombre;
+      qs('#horas-servicio').value = est.servicio;
+      qs('#horas-voluntariado').value = est.voluntariado;
+      modal.dataset.index = index;
+      modal.classList.add('active');
+    }
+
+    // Guardar cambios -----------------------------------------------------
+    handleFormSubmission(qs('#form-horas'));
+
+    qs('#form-horas').addEventListener('submit', () => {
+      const i = modal.dataset.index;
+      estudiantes[i].servicio = Number(qs('#horas-servicio').value);
+      estudiantes[i].voluntariado = Number(qs('#horas-voluntariado').value);
+      modal.classList.remove('active');
+      renderList(buscar.value);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+/* --------------------------------------------------
+   global.css – Estilos base para “Universidad Social”
+   Palette: Primario #ffffff, Secundario #064e3b, variaciones verdes,
+            complementario #ffd54f y otros estados (error, info, warning)
+   Tipografía: Inter (Google Fonts)
+---------------------------------------------------*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Core palette */
+  --color-primary: #ffffff;
+  --color-secondary: #064e3b;
+
+  /* Greens */
+  --color-green-100: #e8f5e9;
+  --color-green-200: #c8e6c9;
+  --color-green-300: #a5d6a7;
+  --color-green-400: #81c784;
+  --color-green-500: #66bb6a;
+  --color-green-600: #4caf50;
+  --color-green-700: #43a047;
+  --color-green-800: #388e3c;
+  --color-green-900: #2e7d32;
+
+  /* Complementary & semantic */
+  --color-complementary: #ffd54f;
+  --color-error: #e53935;
+  --color-warning: #ffa000;
+  --color-info: #29b6f6;
+  --color-success: var(--color-green-600);
+
+  /* Typography & misc */
+  --font-family: 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --transition-fast: 0.2s ease-in-out;
+  --border-radius: 0.75rem;
+  --shadow-1: 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-2: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* ------------ Reset & Base ------------ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%}
+body{
+  font-family:var(--font-family);
+  line-height:1.5;
+  background:var(--color-primary);
+  color:var(--color-secondary);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ------------ Typography ------------ */
+h1,h2,h3,h4,h5,h6{font-weight:600;color:var(--color-secondary);margin:0 0 .5em}
+a{color:var(--color-info);text-decoration:none;transition:color var(--transition-fast)}
+a:hover,a:focus{color:var(--color-secondary);text-decoration:underline}
+p{margin:0 0 1em;color:var(--color-green-900)}
+
+/* ------------ Layout Helpers ------------ */
+.container{width:90%;max-width:1200px;margin:auto;padding:2rem 0}
+.grid-2{display:grid;gap:2rem}
+.grid-3{display:grid;gap:2rem}
+@media(min-width:768px){.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}}
+
+/* ------------ Components ------------ */
+.card{
+  background:var(--color-primary);
+  border-radius:var(--border-radius);
+  box-shadow:var(--shadow-1);
+  padding:1.5rem;
+  transition:transform var(--transition-fast),box-shadow var(--transition-fast)
+}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border:none;border-radius:var(--border-radius);font-size:1rem;font-weight:500;cursor:pointer;transition:background-color var(--transition-fast),transform var(--transition-fast)}
+.btn-primary{background:var(--color-secondary);color:var(--color-primary)}
+.btn-primary:hover{background:var(--color-green-700);transform:translateY(-2px)}
+.btn-secondary{background:var(--color-primary);color:var(--color-secondary);border:2px solid var(--color-secondary)}
+.btn-secondary:hover{background:var(--color-green-100)}
+
+/* Forms */
+label{display:block;margin-bottom:.5rem;font-weight:500;color:var(--color-green-800)}
+.form-group{margin-bottom:1.5rem}
+input,select,textarea{
+  width:100%;padding:.75rem 1rem;border:2px solid var(--color-green-300);border-radius:var(--border-radius);background:var(--color-primary);color:var(--color-green-900);font-size:1rem;transition:border-color var(--transition-fast),box-shadow var(--transition-fast)
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--color-secondary);box-shadow:0 0 0 3px rgba(6,78,59,.2)}
+
+/* Navbar */
+.navbar{background:var(--color-primary);border-bottom:1px solid var(--color-green-200);padding:1rem 2rem;position:sticky;top:0;z-index:100}
+.navbar-brand{font-weight:700;font-size:1.25rem;color:var(--color-secondary)}
+.nav-link{margin-left:1.5rem;color:var(--color-green-800);transition:color var(--transition-fast)}
+.nav-link:hover{color:var(--color-secondary)}
+
+/* Tables */
+.table{width:100%;border-collapse:collapse;margin-bottom:2rem}
+.table th,.table td{padding:.75rem 1rem;border:1px solid var(--color-green-200);text-align:left}
+.table thead{background:var(--color-green-100)}
+
+/* Modals */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;justify-content:center;align-items:center;padding:2rem;opacity:0;visibility:hidden;transition:opacity var(--transition-fast),visibility var(--transition-fast)}
+.modal.active{opacity:1;visibility:visible}
+.modal-content{background:var(--color-primary);border-radius:var(--border-radius);padding:2rem;max-width:600px;width:100%;box-shadow:var(--shadow-2);position:relative}
+.modal-close{position:absolute;top:1rem;right:1rem;background:transparent;border:none;font-size:1.5rem;color:var(--color-green-700);cursor:pointer}
+
+/* Alerts */
+.alert{padding:1rem 1.5rem;border-radius:var(--border-radius);margin-bottom:1rem}
+.alert-success{background:var(--color-green-100);border:1px solid var(--color-success);color:var(--color-success)}
+.alert-error{background:#ffebee;border:1px solid var(--color-error);color:var(--color-error)}
+
+/* Utilities */
+.hidden{display:none!important}
+
+/* Animations */
+@keyframes fade-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.animate-fade-in{animation:fade-in .4s ease-out forwards}

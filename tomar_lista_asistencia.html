@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tomar Lista de Asistencia</title>
+  <link rel="stylesheet" href="global.css" />
+</head>
+<body>
+  <header class="navbar">
+    <a class="navbar-brand" href="index.html">Universidad Social</a>
+  </header>
+
+  <main class="container animate-fade-in">
+    <h1>Tomar Lista de Asistencia</h1>
+
+    <form id="form-lista" class="card" data-success="Se ha enviado la lista de asistencia correctamente.">
+      <table class="table">
+        <thead>
+          <tr><th>Participante</th><th>Asiste</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Ana Gómez</td><td><input type="checkbox" name="asiste1"></td></tr>
+          <tr><td>Luis Pérez</td><td><input type="checkbox" name="asiste2"></td></tr>
+          <tr><td>María Rodríguez</td><td><input type="checkbox" name="asiste3"></td></tr>
+          <tr><td>Carlos Díaz</td><td><input type="checkbox" name="asiste4"></td></tr>
+        </tbody>
+      </table>
+
+      <div class="form-group">
+        <label for="firma">Firma digital</label>
+        <input id="firma" name="firma" required placeholder="Dibuja o escribe tu firma" />
+      </div>
+      <button type="submit" class="btn btn-primary">Enviar lista</button>
+    </form>
+
+    <p><a class="btn btn-secondary" href="index.html">Página Principal</a></p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
