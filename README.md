@@ -1,61 +1,267 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Universidad Social — Guía de instalación (macOS y Windows)
 
-## About Laravel
+Esta guía explica, paso a paso, cómo poner a funcionar el proyecto en **cualquier computadora**, incluyendo:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+* Instalación de dependencias
+* Configuración del entorno (`.env`)
+* Creación de base de datos
+* **Ejecución de los 2 archivos `.sql` por terminal**
+* Arranque del servidor
+* Cómo crear el primer usuario **administrador**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+> **Stack**: Laravel 12, PHP 8.4+ (8.2+ funciona), MySQL/MariaDB, Composer, Node.js
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 1) Requisitos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Asegúrate de tener instalado:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+* **Git**
+* **PHP 8.2+** (recomendado 8.4) con extensiones: `openssl`, `pdo`, `mbstring`, `tokenizer`, `xml`, `ctype`, `json`, `bcmath`.
+* **Composer** ([https://getcomposer.org](https://getcomposer.org))
+* **Node.js 18+** y **npm**
+* **MySQL/MariaDB**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+  * En macOS puedes usar **MAMP** (MySQL suele estar en host `127.0.0.1`, puerto `8889`, usuario `root`, clave `root`).
+  * En Windows puedes usar **XAMPP/WAMP** (MySQL típico en puerto `3306`, usuario `root`, **sin clave** por defecto).
 
-## Laravel Sponsors
+> Si usas MAMP/XAMPP, enciende **Apache** y **MySQL** antes de continuar.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 2) Obtener el código
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+git clone <URL_DEL_REPO> universidad-social-UTP
+cd universidad-social-UTP
+```
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 3) Instalar dependencias
 
-## Code of Conduct
+```bash
+composer install
+npm install
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 4) Preparar el archivo `.env`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Copia el ejemplo y genera clave de aplicación:
 
-## License
+**macOS / Linux**
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+**Windows (PowerShell)**
+
+```powershell
+copy .env.example .env
+php artisan key:generate
+```
+
+### 4.1) Configura variables principales en `.env`
+
+Edita `.env` y ajusta al entorno local:
+
+```dotenv
+APP_NAME="Universidad Social UTP"
+APP_ENV=local
+APP_KEY=base64:GENERADA_POR_ARTISAN
+APP_DEBUG=true
+APP_URL=http://127.0.0.1:8000
+
+# MySQL (ajusta HOST/PORT/USER/PASS según MAMP/XAMPP)
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306         # MAMP usa 8889 por defecto
+DB_DATABASE=universidad_social
+DB_USERNAME=root
+DB_PASSWORD=         # MAMP: root / XAMPP: (vacío por defecto)
+
+# Si usas MAMP (por defecto):
+# DB_PORT=8889
+# DB_PASSWORD=root
+```
+
+---
+
+## 5) Crear la base de datos y **cargar los 2 .sql por terminal**
+
+> En el repo coloca tus archivos `.sql` (por ejemplo `db/1_schema.sql` y `db/2_seed.sql`).
+> Sustituye rutas/nombres de archivo si los tuyos son distintos.
+
+### 5.1) macOS con **MAMP** (puerto MySQL 8889)
+
+**Crear la base de datos**
+
+```bash
+/Applications/MAMP/Library/bin/mysql -u root -proot -h 127.0.0.1 -P 8889 -e "CREATE DATABASE IF NOT EXISTS universidad_social CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+**Importar el esquema**
+
+```bash
+/Applications/MAMP/Library/bin/mysql -u root -proot -h 127.0.0.1 -P 8889 universidad_social < db/1_schema.sql
+```
+
+**Importar los datos (seed)**
+
+```bash
+/Applications/MAMP/Library/bin/mysql -u root -proot -h 127.0.0.1 -P 8889 universidad_social < db/2_seed.sql
+```
+
+> Si tus `.sql` ya incluyen `CREATE DATABASE`/`USE`, puedes omitir el primer paso.
+
+### 5.2) Windows con **XAMPP/WAMP** (puerto MySQL 3306)
+
+**Crear la base de datos**
+
+```powershell
+mysql -u root -h 127.0.0.1 -P 3306 -e "CREATE DATABASE IF NOT EXISTS universidad_social CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+**Importar el esquema**
+
+```powershell
+mysql -u root -h 127.0.0.1 -P 3306 universidad_social < db\1_schema.sql
+```
+
+**Importar los datos (seed)**
+
+```powershell
+mysql -u root -h 127.0.0.1 -P 3306 universidad_social < db\2_seed.sql
+```
+
+> Si tu `root` tiene contraseña, agrega `-p` (te pedirá la clave), o `-pTU_CLAVE` (sin espacios).
+
+---
+
+## 6) Ajustes de permisos (necesarios en macOS/Linux)
+
+Para evitar problemas de caché y subida de archivos:
+
+```bash
+chmod -R ug+rwx storage bootstrap/cache
+php artisan storage:link
+```
+
+En Windows, asegúrate de que tu usuario tenga permisos de **Modificar** sobre `storage` y `bootstrap/cache`. Luego:
+
+```powershell
+php artisan storage:link
+```
+
+---
+
+## 7) Compilar assets (opcional en desarrollo)
+
+```bash
+npm run dev
+# o para producción
+# npm run build
+```
+
+---
+
+## 8) Arrancar el servidor de desarrollo
+
+```bash
+php artisan serve
+```
+
+Visita: **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+
+> Si usas MAMP/XAMPP con Apache, también puedes configurar un VirtualHost que apunte al directorio `public/` del proyecto. Para desarrollo, `php artisan serve` es suficiente.
+
+---
+
+## 9) Flujo básico para verificar
+
+* Inicia sesión como **administrador**:
+
+  * Verás el panel con **Propuestas pendientes**, **Activas** y **Finalizadas/Rechazadas**.
+  * Acepta una propuesta → crea una Actividad **publicada**.
+  * Cierra convocatoria, habilita y **cierra** la lista de asistencia.
+    Al **cerrar la lista**, el sistema otorga **automáticamente** las horas a quienes asistieron y verás un mensaje de confirmación.
+
+* Inicia sesión como **profesor/organización**:
+
+  * Podrás **postular** actividades.
+  * Si el admin habilita la lista (**compartida**), verás el botón **Tomar lista**.
+
+* Inicia sesión como **estudiante**:
+
+  * Verás tus **horas acumuladas** (más grandes en el encabezado).
+  * Verás **convocatorias abiertas** con botón **Apuntarse** (se desactiva si ya estás inscrito).
+  * Modal de confirmación antes de apuntarte.
+  * Tabla de **activas** y **finalizadas** propias.
+
+---
+
+## 10) Comandos útiles
+
+* **Limpiar cachés** (si algo no se refleja):
+
+  ```bash
+  php artisan optimize:clear
+  ```
+
+* **Verificar conexión DB**:
+
+  ```bash
+  php artisan tinker
+  >>> DB::select('SELECT 1');
+  ```
+
+---
+
+## 11) Problemas comunes y soluciones
+
+* **No me conecta a la base de datos**
+  Verifica `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` en `.env`.
+  En **MAMP**, MySQL suele estar en **puerto 8889** y credenciales **root/root**.
+
+* **Los `.sql` fallan**
+  Asegúrate de que la **BD existe** y que importas en el **orden correcto**: primero **schema**, luego **seed**.
+  Quita `CREATE DATABASE`/`USE` del `.sql` si te da conflicto y usa la BD creada en el paso 5.
+
+* **403 al tomar lista**
+  Verifica que el usuario tenga rol **profesor** u **organización** y que la ruta tenga el middleware correcto.
+  Asegúrate de que la lista esté en estado **compartida** y la actividad tenga `attendance_enabled=1`.
+
+* **Storage/archivos no visibles**
+  Ejecuta `php artisan storage:link` y revisa permisos de `storage` + `bootstrap/cache`.
+
+---
+
+## 12) Estructura de los archivos `.sql` (sugerencia)
+
+* `db/1_schema.sql` → DDL (CREATE TABLEs, índices, constraints)
+* `db/2_seed.sql`   → Datos iniciales (roles, usuarios de prueba, etc.)
+
+Puedes usar otros nombres, pero **mantén el orden** de importación.
+
+---
+
+## 13) ¿Necesito migraciones?
+
+Este proyecto está preparado para trabajar directamente con los **.sql** que ya incluyen estructura y datos.
+Si prefieres migraciones, revísalas antes y **no mezcles** ambos enfoques para evitar conflictos.
+
+---
+
+## 14) Variables extra útiles
+
+```dotenv
+# Ajusta la hora/idioma si lo necesitas
+APP_TIMEZONE=America/Panama
+APP_LOCALE=es
+```
