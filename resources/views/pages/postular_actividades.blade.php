@@ -1,36 +1,73 @@
 @extends('layouts.app')
 @section('title','Postular Actividades')
+
 @section('content')
-  <h1>Postular Actividades</h1>
-  <p>Seleccione su rol para continuar.</p>
+<div class="container" style="max-width:820px">
+  <h1 style="margin-bottom:.75rem">Postular Actividades</h1>
+  <p style="margin:0 0 1rem 0">
+    Completa los datos de la propuesta. El documento debe ser del encargado (Pasaporte, Cédula o Licencia).
+  </p>
 
-  <div class="grid-2">
-    <form id="form-prof" class="card" method="POST" action="{{ route('postular.actividades.submit') }}" data-success="Actividad postulada; un trabajador de la DSSU se pondrá en contacto contigo pronto, vía telefónica, para confirmar la aceptación de la actividad.">
-      @csrf
-      <h2>Formulario para Profesor</h2>
-      <div class="form-group"><label for="prof-lugar">Lugar</label><input id="prof-lugar" name="lugar" required /></div>
-      <div class="form-group"><label for="prof-fecha">Fecha</label><input type="date" id="prof-fecha" name="fecha" required /></div>
-      <div class="form-group"><label for="prof-participantes">Cantidad de participantes</label><input type="number" id="prof-participantes" name="participantes" min="1" required /></div>
-      <div class="form-group"><label for="prof-tipo">Tipo de trabajo social</label><input id="prof-tipo" name="tipo" required /></div>
-      <div class="form-group"><label for="prof-permisos">Permisos requeridos</label><textarea id="prof-permisos" name="permisos" rows="2"></textarea></div>
-      <div class="form-group"><label for="prof-datos">Datos del encargado</label><textarea id="prof-datos" name="datos" rows="2" required></textarea></div>
-      <div class="form-group"><label for="prof-firma">Firma digital</label><input id="prof-firma" name="firma" required /></div>
-      <button type="submit" class="btn btn-primary">Postular</button>
-    </form>
+  @if (session('status')) <div class="alert alert-success">{{ session('status') }}</div> @endif
+  @if ($errors->any())
+    <div class="alert alert-error">
+      <ul style="margin:0 0 0 1rem">@foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
+    </div>
+  @endif
 
-    <form id="form-org" class="card" method="POST" action="{{ route('postular.actividades.submit') }}" data-success="Actividad postulada; un trabajador de la DSSU se pondrá en contacto contigo pronto, vía telefónica, para confirmar la aceptación de la actividad.">
-      @csrf
-      <h2>Formulario para Organismo</h2>
-      <div class="form-group"><label for="org-lugar">Lugar</label><input id="org-lugar" name="lugar" required /></div>
-      <div class="form-group"><label for="org-fecha">Fecha</label><input type="date" id="org-fecha" name="fecha" required /></div>
-      <div class="form-group"><label for="org-participantes">Cantidad de participantes</label><input type="number" id="org-participantes" name="participantes" min="1" required /></div>
-      <div class="form-group"><label for="org-tipo">Tipo de trabajo social</label><input id="org-tipo" name="tipo" required /></div>
-      <div class="form-group"><label for="org-permisos">Permisos requeridos</label><textarea id="org-permisos" name="permisos" rows="2"></textarea></div>
-      <div class="form-group"><label for="org-datos">Datos del encargado</label><textarea id="org-datos" name="datos" rows="2" required></textarea></div>
-      <div class="form-group"><label for="org-firma">Firma digital</label><input id="org-firma" name="firma" required /></div>
-      <button type="submit" class="btn btn-primary">Postular</button>
-    </form>
-  </div>
+  <form method="POST" action="{{ route('postular.actividades.submit') }}" class="card" enctype="multipart/form-data">
+    @csrf
+    <div class="grid-2">
+      <div class="form-group">
+        <label for="place">Lugar</label>
+        <input id="place" name="place" required maxlength="255" />
+      </div>
 
-  <p><a class="btn btn-secondary" href="{{ route('home') }}">Regresar a Página Principal</a></p>
+      <div class="form-group">
+        <label for="event_date">Fecha del evento</label>
+        <input type="date" id="event_date" name="event_date" required />
+      </div>
+
+      <div class="form-group">
+        <label for="participants_count">Cantidad de participantes</label>
+        <input type="number" id="participants_count" name="participants_count" min="1" required />
+      </div>
+
+      <div class="form-group">
+        <label for="work_type">Tipo de trabajo social</label>
+        <input id="work_type" name="work_type" required maxlength="120" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="proposal_description"><strong>Descripción detallada de la actividad</strong></label>
+      <textarea id="proposal_description" name="proposal_description" rows="5" required placeholder="Describa objetivos, alcance, tareas, logística, etc."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="permits">Permisos requeridos</label>
+      <textarea id="permits" name="permits" rows="2" placeholder="(Opcional)"></textarea>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label for="manager_name">Nombre del encargado</label>
+        <input id="manager_name" name="manager_name" required maxlength="120" />
+      </div>
+      <div class="form-group">
+        <label for="manager_phone">Teléfono del encargado</label>
+        <input id="manager_phone" name="manager_phone" maxlength="50" placeholder="(Opcional)" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="manager_doc"><strong>Documento personal del encargado</strong> (Pasaporte/Cédula/Licencia)</label>
+      <input type="file" id="manager_doc" name="manager_doc" accept="application/pdf,image/png,image/jpeg" required />
+      <small class="text-muted">Formatos: PDF, JPG, PNG. Máx. 2MB.</small>
+    </div>
+
+    <button class="btn btn-primary">Postular</button>
+    <a class="btn btn-secondary" href="{{ route('home') }}">Regresar</a>
+  </form>
+</div>
 @endsection

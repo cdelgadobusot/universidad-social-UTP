@@ -46,7 +46,38 @@
           <input id="password_confirmation" name="password_confirmation" type="password"
                  required minlength="8" autocomplete="new-password" placeholder="Repite la contraseña" />
         </div>
+        {{-- ...campos existentes... --}}
 
+        <div class="form-group">
+          <label style="display:block; font-weight:700; margin:.5rem 0">Selecciona tu rol (obligatorio)</label>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:.75rem">
+            @php $oldRole = old('role'); @endphp
+
+            <label class="card" style="border:2px solid #0f5132; padding:.75rem; border-radius:.5rem; cursor:pointer">
+              <input type="radio" name="role" value="estudiante" {{ $oldRole==='estudiante' ? 'checked' : '' }} required>
+              <strong>Estudiante</strong><br><small>Puede registrarse en actividades.</small>
+            </label>
+
+            <label class="card" style="border:2px solid #0f5132; padding:.75rem; border-radius:.5rem; cursor:pointer">
+              <input type="radio" name="role" value="profesor" {{ $oldRole==='profesor' ? 'checked' : '' }} required>
+              <strong>Profesor</strong><br><small>Puede postular actividades.</small>
+            </label>
+
+            <label class="card" style="border:2px solid #0f5132; padding:.75rem; border-radius:.5rem; cursor:pointer">
+              <input type="radio" name="role" value="organizacion" {{ $oldRole==='organizacion' ? 'checked' : '' }} required>
+              <strong>Organización</strong><br><small>Postula y toma asistencia.</small>
+            </label>
+
+            <label class="card" style="border:2px solid #0f5132; padding:.75rem; border-radius:.5rem; cursor:pointer">
+              <input type="radio" name="role" value="administrador" {{ $oldRole==='administrador' ? 'checked' : '' }} required>
+              <strong>Administrador (DSSU)</strong><br><small>Publica y gestiona horas/listas.</small>
+            </label>
+          </div>
+
+          @error('role') <small class="text-error">{{ $message }}</small> @enderror
+        </div>
+        
         <button type="submit" class="btn btn-primary" id="btn-register">Crear cuenta</button>
 
         <p style="margin-top:1rem">
