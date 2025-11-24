@@ -29,18 +29,31 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:estudiante,profesor,organizacion,administrador'], // <<< NUEVO
-        ]);
+        $request->validate(
+            [
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+                // Usa la política global definida en AppServiceProvider (Password::defaults())
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                'role' => ['required', 'in:estudiante,profesor,organizacion,administrador'],
+            ],
+            // 🔽 Mensajes personalizados
+            [
+                'password.required'  => 'La contraseña es obligatoria.',
+                'password.confirmed' => 'Las contraseñas no coinciden.',
+                // Forzamos que, si falla cualquiera de las reglas (min/mixed/symbols),
+                // se muestre SIEMPRE este mismo mensaje claro:
+                'password.min'       => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial.',
+                'password.mixed'     => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial.',
+                'password.symbols'   => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial.',
+            ]
+        );
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role, // <<< NUEVO
+            'role' => $request->role,
         ]);
 
         event(new Registered($user));
@@ -48,5 +61,4 @@ class RegisteredUserController extends Controller
 
         return redirect(route('dashboard', absolute: false));
     }
-
 }
