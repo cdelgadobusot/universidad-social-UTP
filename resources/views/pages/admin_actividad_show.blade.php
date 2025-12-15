@@ -107,6 +107,8 @@
 
   @unless($estaFinalizada)
   <div style="display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0">
+
+    {{-- Cerrar convocatoria (solo si está publicada) --}}
     @if($act->status==='publicada')
       <form class="js-confirm" data-msg="¿Cerrar convocatoria para nuevos inscritos?"
             method="POST" action="{{ route('admin.actividad.close',$act->id) }}">@csrf
@@ -114,13 +116,19 @@
       </form>
     @endif
 
-    @if($act->status==='cerrada' && !$act->attendance_enabled)
-      <form class="js-confirm" data-msg="¿Habilitar la lista de asistencia para el organizador/profesor?"
+    {{-- ✅ CAMBIO: mostrar SIEMPRE el botón habilitar mientras NO esté finalizada y aún no esté habilitada
+         Esto permite probar el caso fallido cuando la actividad está 'publicada'.
+         El controlador ya valida que primero debe estar 'cerrada'. --}}
+    @if(!$act->attendance_enabled)
+      <form class="js-confirm"
+            data-msg="¿Habilitar la lista de asistencia para el organizador/profesor?
+(Nota: si la convocatoria no está cerrada, el sistema mostrará un error)"
             method="POST" action="{{ route('admin.actividad.enableAttendance',$act->id) }}">@csrf
         <button class="btn btn-primary">Habilitar “Tomar lista”</button>
       </form>
     @endif
 
+    {{-- Cerrar lista de asistencia (si existe lista y no está cerrada) --}}
     @if($list && $list->status!=='cerrada')
       <form class="js-confirm" data-msg="¿Cerrar la lista de asistencia?"
             method="POST" action="{{ route('admin.actividad.closeAttendance',$act->id) }}">@csrf
@@ -128,6 +136,7 @@
       </form>
     @endif
 
+    {{-- Finalizar (si lista cerrada) --}}
     @if($list && $list->status==='cerrada')
       <form class="js-confirm" data-msg="¿Finalizar actividad y otorgar horas a asistentes?"
             method="POST" action="{{ route('admin.actividad.finalize',$act->id) }}">@csrf

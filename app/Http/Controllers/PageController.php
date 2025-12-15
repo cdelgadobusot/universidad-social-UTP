@@ -144,10 +144,22 @@ class PageController extends Controller
 
     public function registrarActividadesSubmit(Request $r)
     {
-        $r->validate([
-            'activity_id' => 'required|exists:activities,id',
-            'receipt'     => 'required|file|mimes:pdf,png,jpg,jpeg|max:4096',
-        ]);
+        $r->validate(
+    [
+        'activity_id' => ['required', 'exists:activities,id'],
+        'receipt'     => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+    ],
+    [
+        'activity_id.required' => 'Debe seleccionar una actividad.',
+        'activity_id.exists'   => 'La actividad seleccionada no existe.',
+
+        'receipt.required' => 'El recibo de matrícula es obligatorio.',
+        'receipt.file'     => 'El recibo debe ser un archivo válido.',
+        'receipt.mimes'    => 'El recibo debe ser PDF, JPG o PNG.',
+        'receipt.max'      => 'El archivo no debe superar los 2MB.',
+    ]
+);
+
 
         // Verifica que la actividad esté abierta
         $act = DB::table('activities')->where('id',$r->activity_id)->first();
@@ -485,37 +497,76 @@ class PageController extends Controller
         return view('pages.tomar_lista_asistencia', compact('lists'));
     }
 
-    public function tomarListaSubmit(Request $r)
-    {
-        $r->validate([
+public function tomarListaSubmit(Request $r)
+{
+    $user = $r->user();
+
+    $r->validate(
+        [
             'attendance_list_id' => 'required|exists:attendance_lists,id',
-            'attended' => 'array',
-            'signature' => 'required|string|max:255', // ahora texto
-        ]);
+            'attended'           => 'array',
+            'signature'          => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) use ($user) {
+                    // Normaliza para comparar (sin espacios extra y sin importar mayúsculas)
+                    $firma  = mb_strtolower(trim(preg_replace('/\s+/', ' ', $value)));
+                    $nombre = mb_strtolower(trim(preg_replace('/\s+/', ' ', $user->name)));
 
-        $listId = (int) $r->attendance_list_id;
+                    if ($firma !== $nombre) {
+                        $fail('La firma no coincide con tu usuario');
+                    }
+                }
+            ],
+        ],
+        [
+            'signature.required' => 'Debe ingresar su nombre para firmar la lista de asistencia.',
+        ]
+    );
 
-        // Reset y marcado de asistencia
-        DB::table('attendance_entries')->where('attendance_list_id',$listId)->update(['attended'=>0,'marked_at'=>now()]);
-        foreach (array_keys($r->input('attended', [])) as $sid) {
-            DB::table('attendance_entries')
-                ->where('attendance_list_id',$listId)
-                ->where('student_id',$sid)
-                ->update(['attended'=>1,'marked_at'=>now()]);
-        }
+    $listId = (int) $r->attendance_list_id;
 
-        // Guardar “firma” como texto (sin archivo)
-        DB::table('org_signatures')->insert([
-            'attendance_list_id'   => $listId,
-            'organization_user_id' => $r->user()->id,
-            'signature_path'       => null,                // ya no usamos archivo
-            'signature_text'       => $r->signature,       // NUEVO: texto
-            'signed_at'            => now()
-        ]);
-
-        DB::table('attendance_lists')->where('id',$listId)->update(['status'=>'enviada','updated_at'=>now()]);
-
-        return back()->with('status','Lista enviada. El administrador otorgará las horas.');
+    // Verifica que la lista siga habilitada para tomar (evita enviar listas no compartidas)
+    $list = DB::table('attendance_lists')->where('id', $listId)->first();
+    if (!$list || $list->status !== 'compartida') {
+        return back()->withErrors(['signature' => 'Actividad no disponible para asistencia.']);
     }
+
+    // Reset y marcado de asistencia
+    DB::table('attendance_entries')
+        ->where('attendance_list_id', $listId)
+        ->update([
+            'attended'  => 0,
+            'marked_at' => now()
+        ]);
+
+    foreach (array_keys($r->input('attended', [])) as $sid) {
+        DB::table('attendance_entries')
+            ->where('attendance_list_id', $listId)
+            ->where('student_id', $sid)
+            ->update([
+                'attended'  => 1,
+                'marked_at' => now()
+            ]);
+    }
+
+    // Guardar firma como texto
+    DB::table('org_signatures')->insert([
+        'attendance_list_id'   => $listId,
+        'organization_user_id' => $user->id,
+        'signature_path'       => null,
+        'signature_text'       => $r->signature,
+        'signed_at'            => now()
+    ]);
+
+    DB::table('attendance_lists')->where('id', $listId)->update([
+        'status'     => 'enviada',
+        'updated_at' => now()
+    ]);
+
+    return back()->with('status', 'Lista enviada. El administrador otorgará las horas.');
+}
+
 
 }

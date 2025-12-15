@@ -2,21 +2,7 @@
 USE universidad_social;
 
 -- Estado consistente para todos
-SET FOREIGN_KEY_CHECKS=0;
-TRUNCATE TABLE hours_logs;
-TRUNCATE TABLE org_signatures;
-TRUNCATE TABLE attendance_entries;
-TRUNCATE TABLE attendance_lists;
-TRUNCATE TABLE activity_registrations;
-TRUNCATE TABLE activity_proposals;
-TRUNCATE TABLE activities;
-TRUNCATE TABLE organizations;
-TRUNCATE TABLE sessions;
-TRUNCATE TABLE cache;
-TRUNCATE TABLE cache_locks;
-TRUNCATE TABLE password_reset_tokens;
-TRUNCATE TABLE users;
-SET FOREIGN_KEY_CHECKS=1;
+
 
 -- Hash bcrypt conocido de Laravel para 'password'
 SET @HASH := '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi';

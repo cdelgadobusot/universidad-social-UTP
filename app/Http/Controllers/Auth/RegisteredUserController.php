@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
@@ -33,19 +32,18 @@ class RegisteredUserController extends Controller
             [
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-                // Usa la política global definida en AppServiceProvider (Password::defaults())
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
-                'role' => ['required', 'in:estudiante,profesor,organizacion,administrador'],
+                // IMPORTANTE: si NO quieres permitir crear admins desde registro público,
+                // cambia el in: para quitar "administrador".
+                'role' => ['required', 'in:estudiante,profesor,organizacion'],
             ],
-            // 🔽 Mensajes personalizados
             [
                 'password.required'  => 'La contraseña es obligatoria.',
                 'password.confirmed' => 'Las contraseñas no coinciden.',
-                // Forzamos que, si falla cualquiera de las reglas (min/mixed/symbols),
-                // se muestre SIEMPRE este mismo mensaje claro:
                 'password.min'       => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial.',
                 'password.mixed'     => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial.',
                 'password.symbols'   => 'La contraseña debe tener al menos 8 caracteres, una mayúscula y un carácter especial.',
+                'email.unique'   => 'El correo electrónico ya está registrado.',
             ]
         );
 
@@ -57,8 +55,13 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
-        Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // ✅ NO iniciar sesión automáticamente
+        // Auth::login($user);
+
+        // ✅ Mensaje + redirección al login
+        return redirect()
+            ->route('login')
+            ->with('status', 'Cuenta creada correctamente. Ahora puedes iniciar sesión.');
     }
 }
